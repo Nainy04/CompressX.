@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Online File Compressor</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+    <title>Document</title>
+</head>
+<body>
+    
+
+    <nav class="navbar">
+        <div class="logo"><span>compress</span>X</div>
+        <ul class="nav-links">
+            <li><a href="#compress">Compress</a></li>
+            <li><a href="#analyze">Analyze</a></li>
+            <li><a href="#about">About</a></li>
+        </ul>
+    </nav>
+
+ 
+    <div class="container">
+        <h1>Online File Compressor</h1>
+        <p>Compress <strong>Word, JPEG</strong> and <strong>PNG</strong> files</p>
+
+        <div class="file-upload">
+            <i>📄</i> 
+            <p>Choose or drop file<br></p>
+            <br>
+            <br>
+            <form action="/submit">
+                <input type="file" name="file" id="file">
+            </form>
+        </div>
+
+        
+    </div>
+
+
+</body>
+</html>
