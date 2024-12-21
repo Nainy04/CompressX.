@@ -138,44 +138,43 @@ def png_compress(input_path, output_path):
 def home():
     return render_template('index.html')
 
-@app.route('/upload', methods=['POST','GET'])
+@app.route('/upload', methods=['POST'])
 def upload():
-  
-    if request.method == 'POST':
-        if 'file' not in request.files:
-            return 'No file part'
+    if 'file' not in request.files:
+        return 'No file part'
     
-        file = request.files['file']
-        if file.filename == '':
-            return 'No selected file'
-        
-        allowed_ext = ['png', 'jpg', 'txt']
+    file = request.files['file']
+    if file.filename == '':
+        return 'No selected file'
+    
+    allowed_ext = {'png': png_compress, 'jpg': jpeg_compress, 'txt': huffman_compress}
 
-        if file:
-            ext = file.filename.rsplit('.', 1)[1].lower()
-            if ext in allowed_ext:
-                filename = secure_filename(file.filename)
-                filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-                file.save(filepath)
-                print(f"File saved: {filepath}")
+    if file:
+        ext = file.filename.rsplit('.', 1)[1].lower()
+        if ext in allowed_ext:
+            filename = secure_filename(file.filename)
+            filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            file.save(filepath)
+            print(f"File saved: {filepath}")
 
-                compressed_filename = f"compressed_{filename}"
-                compressed_filepath = os.path.join(app.config['COMPRESSED_FOLDER'], compressed_filename)
+            compressed_filename = f"compressed_{filename}"
+            compressed_filepath = os.path.join(app.config['COMPRESSED_FOLDER'], compressed_filename)
 
-                try:
-                    print(f"Starting {ext.upper()} compression...")
-                    allowed_ext[ext](filepath, compressed_filepath)
-                    print(f"File compressed successfully: {compressed_filepath}")
-                except Exception as e:
-                    return f'Compression failed due to {e}'
+            try:
+                print(f"Starting {ext.upper()} compression...")
+                allowed_ext[ext](filepath, compressed_filepath)
+                print(f"File compressed successfully: {compressed_filepath}")
+            except Exception as e:
+                print(f"Error during compression: {e}")
+                return 'Compression failed'
 
-                if not os.path.exists(compressed_filepath):
-                    print("Error: Compressed file not found")
-                    return f'Compression failed, file not created due to not exitent file path'
+            if not os.path.exists(compressed_filepath):
+                print("Error: Compressed file not found")
+                return 'Compression failed, file not created'
 
-                return redirect(url_for('download', filename=compressed_filename))
-            else:
-                return 'File type not supported'
+            return redirect(url_for('download', filename=compressed_filename))
+        else:
+            return 'File type not supported'
 
 @app.route('/download/<filename>')
 def download(filename):
